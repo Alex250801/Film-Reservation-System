@@ -1,0 +1,69 @@
+package tests;
+
+import org.junit.Test;
+import service.Movie;
+import service.Theater;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import static org.junit.Assert.*;
+
+public class TheaterTest {
+    @Test
+    public void testReserveSeat() {
+        Theater theater = new Theater();
+        theater.reserveSeat(1, 1, new Movie("Movie 1"));
+
+        // Verify that the seat is not available
+        assertFalse(theater.isSeatAvailable(1, 1));
+    }
+
+    @Test
+    public void testReserveSeatAlreadyReserved() {
+        Theater theater = new Theater();
+        theater.reserveSeat(1, 1, new Movie("Movie 1"));
+        theater.reserveSeat(1, 1, new Movie("Movie 1"));
+        // Verify that the seat is still reserved
+        assertFalse(theater.isSeatAvailable(1, 1));
+    }
+
+    @Test
+    public void testCancelReservation() {
+        Theater theater = new Theater();
+        theater.reserveSeat(1, 1, new Movie("Movie 1"));
+        theater.cancelReservation(1, 1);
+        // Verify that the seat is available again
+        assertTrue(theater.isSeatAvailable(1, 1));
+    }
+
+    @Test
+    public void testDisplayTheater() {
+        // Create a theater
+        Theater theater = new Theater();
+
+        // Reserve a seat
+        theater.reserveSeat(1, 1, new Movie("Movie 1"));
+
+        // Capture the output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        // Display the theater
+        theater.displayTheater();
+
+        // Verify the output
+        String output = outContent.toString();
+        String[] lines = output.split("\n");
+        assertEquals("Seat reserved successfully.\n", lines[0]);
+        String layout = output.substring(lines[0].length() + 1); // +1 to skip the newline character
+        assertTrue(layout.matches("X O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n" +
+                "O O O O O O O O O O \\n"));
+    }
+}
